@@ -1,16 +1,17 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "A name must be provided"],
     minLength: 3,
     maxLength: 50,
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "An email must be provided"],
     validator: {
       validate: validator.isEmail,
       message: "Enter a valid email",
@@ -29,5 +30,15 @@ const UserSchema = new mongoose.Schema({
     default: "user",
   },
 });
+
+UserSchema.pre("save", async function () {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+UserSchema.methods.comparePassword = async function (password: string) {
+  const isMatching = await bcrypt.compare(password, this.password);
+  return isMatching;
+};
 
 export const User = mongoose.model("User", UserSchema);

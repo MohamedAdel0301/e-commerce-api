@@ -8,6 +8,10 @@ export type ErrorType = {
   errors?: DBError[];
 };
 
+export type Role = {
+  role: "admin" | "user";
+};
+
 export type CustomError = {
   statusCode: number;
   msg: string;

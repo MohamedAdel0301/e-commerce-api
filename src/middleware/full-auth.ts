@@ -1,6 +1,7 @@
 import { CustomErrors } from "../errors";
 import { Request, Response, NextFunction } from "express";
-import isTokenValid from "../utils";
+import { isTokenValid } from "../utils/jwt-utils";
+import { Role } from "../types";
 
 const authenticateUser = async (
   req: Request,
@@ -35,7 +36,7 @@ const authenticateUser = async (
   }
 };
 
-const authorizeRoles = (...roles: String[]) => {
+const authorizeRoles = (...roles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!roles.includes(req.user.role)) {
       throw new CustomErrors.UnauthorizedError(
