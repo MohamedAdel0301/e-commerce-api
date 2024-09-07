@@ -1,5 +1,6 @@
 import { CustomErrors } from "../errors";
 import { Request, Response, NextFunction } from "express";
+import isTokenValid from "../utils";
 
 const authenticateUser = async (
   req: Request,
@@ -23,7 +24,6 @@ const authenticateUser = async (
   try {
     const payload = isTokenValid(token);
 
-    // Attach the user and his permissions to the req object
     req.user = {
       userId: payload.user.userId,
       role: payload.user.role,

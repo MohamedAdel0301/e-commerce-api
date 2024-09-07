@@ -12,7 +12,7 @@ export const errorHandlerMiddleware = (
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
     msg: err.message || "Something went wrong",
   };
-  if (err.name && err.name === "ValidationError") {
+  if (err.errors && err.name === "ValidationError") {
     customError.msg = Object.values(err.errors)
       .map((item) => item.message)
       .join(",");
