@@ -12,3 +12,5 @@ export const RegisterSchema = z.object({
     .max(50, { message: "Email is too long" }),
   password: z.string().min(3).max(50),
 });
+
+export const LoginSchema = RegisterSchema.omit({name:true})

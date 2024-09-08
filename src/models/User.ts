@@ -1,8 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 
-const UserSchema = new mongoose.Schema({
+interface UserDocument extends Document {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  comparePassword(password: string): Promise<boolean>;
+}
+
+const UserSchema = new mongoose.Schema<UserDocument>({
   name: {
     type: String,
     required: [true, "A name must be provided"],

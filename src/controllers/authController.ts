@@ -1,18 +1,16 @@
 import { Request, Response } from "express";
 import { User } from "../models/User";
 import { StatusCodes } from "http-status-codes";
-import { RegisterSchema } from "../types/zod-types";
-import { UnauthenticatedError } from "../errors/unauthenticated-error";
+import { LoginSchema, RegisterSchema } from "../types/zod-types";
 import { CustomErrors } from "../errors";
-import { createJWT } from "../utils/jwt-utils";
-import { JWT_TIME_IN_MS } from "../constants";
+import { attachCookies } from "../utils/jwt-utils";
+import { Types } from "mongoose";
 
 export const register = async (req: Request, res: Response) => {
-  const validation = RegisterSchema.safeParse(req.body);
-
   //validate incoming request
+  const validation = RegisterSchema.safeParse(req.body);
   if (!validation.success) {
-    throw new UnauthenticatedError("Invalid credentials format");
+    throw new CustomErrors.BadRequestError("Invalid credentials format");
   }
   const { name, email, password } = validation.data;
 
@@ -24,18 +22,45 @@ export const register = async (req: Request, res: Response) => {
     );
   }
   const newUser = await User.create({ name, email, password });
-  const tokenContent = { name: newUser.name, userId: newUser._id };
-  const token = createJWT(tokenContent);
+  const tokenContent = {
+    name: newUser.name,
+    userId: newUser._id as Types.ObjectId,
+  };
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    expires: new Date(Date.now() + JWT_TIME_IN_MS),
-  });
+  attachCookies({ res, payload: tokenContent }); //access res.cookie
+
   res.status(StatusCodes.CREATED).json({ user: tokenContent });
 };
-export const login = async (req: Request, res: Response) => {};
+export const login = async (req: Request, res: Response) => {
+  const validation = LoginSchema.safeParse(req.body);
+  if (!validation.success) {
+    throw new CustomErrors.BadRequestError("Invalid credentials format");
+  }
+  const { email, password } = validation.data;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new CustomErrors.UnauthenticatedError("Invalid credentials");
+  }
+  //check password
+  const isMatchingPasswords = await user.comparePassword(password);
+  if (!isMatchingPasswords) {
+    throw new CustomErrors.UnauthenticatedError("Invalid credentials");
+  }
+
+  const tokenContent = {
+    name: user.name,
+    userId: user._id as Types.ObjectId,
+  };
+  attachCookies({ res, payload: tokenContent });
+
+  res.status(StatusCodes.CREATED).json({ user: tokenContent });
+};
+
 export const logout = async (req: Request, res: Response) => {
-  res.json({
-    logout: "success",
+  res.cookie("token", "logout", {
+    expires: new Date(Date.now()),
+    httpOnly: true,
   });
+  res.status(StatusCodes.OK).json({ message: "Logged out successfully" });
 };
