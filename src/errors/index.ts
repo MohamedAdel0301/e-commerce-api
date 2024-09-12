@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "./unauthorized-error";
 import { CustomAPIError } from "./custom-api";
 import { UnauthenticatedError } from "./unauthenticated-error";
 import { NotFoundError } from "./not-found";
@@ -8,4 +9,5 @@ export const CustomErrors = {
   UnauthenticatedError,
   NotFoundError,
   BadRequestError,
+  UnauthorizedError,
 };

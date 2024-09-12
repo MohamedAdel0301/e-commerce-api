@@ -3,10 +3,12 @@ import jwt from "jsonwebtoken";
 import { UnauthenticatedError } from "../errors/unauthenticated-error";
 import { Types } from "mongoose";
 import { Response } from "express";
+import { Role } from "../types/types";
 
 type TokenPayload = {
   name: string;
   userId: Types.ObjectId;
+  role: Role;
 };
 
 export const isTokenValid = (token: string) => {
@@ -36,7 +38,7 @@ export const attachCookies = ({
   res.cookie("token", token, {
     expires: new Date(Date.now() + JWT_TIME_IN_MS),
     httpOnly: true,
-    signed:true,
-    secure: process.env.NODE_ENV === "production"
+    signed: true,
+    secure: process.env.NODE_ENV === "production",
   });
 };

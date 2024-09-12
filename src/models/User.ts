@@ -1,14 +1,23 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import { Role } from "../types/types";
 
 interface UserDocument extends Document {
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: Role;
   comparePassword(password: string): Promise<boolean>;
 }
+
+export type UserType = {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  password: string;
+  role: Role;
+};
 
 const UserSchema = new mongoose.Schema<UserDocument>({
   name: {
