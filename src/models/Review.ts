@@ -4,7 +4,6 @@ interface ReviewDocument extends Document {
   rating: number;
   title: string;
   comment: string;
-  type: string;
   user: Types.ObjectId;
   product: Types.ObjectId;
 }

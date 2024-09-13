@@ -13,6 +13,7 @@ interface ProductDocument extends Document {
   freeShipping?: boolean;
   inventory: number;
   averageRating?: number;
+  numberOfReviews?: number;
   user: UserType;
 }
 
@@ -69,13 +70,24 @@ const ProductSchema = new mongoose.Schema<ProductDocument>(
       type: Number,
       default: 0,
     },
+    numberOfReviews: {
+      type: Number,
+      default: 0,
+    },
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+ProductSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "product",
+  justOne: false,
+});
 
 export const Product = mongoose.model("Product", ProductSchema);

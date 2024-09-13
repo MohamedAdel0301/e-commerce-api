@@ -30,7 +30,7 @@ export const createReview = async (req: Request, res: Response) => {
   res.status(StatusCodes.CREATED).json({ review });
 };
 export const getAllReviews = async (req: Request, res: Response) => {
-  const reviews = await Review.find({}).populate({
+  const reviews = await Review.find({}).populate({ //get more info
     path: "product",
     select: "name company price",
   });
