@@ -7,12 +7,11 @@ import { notFound as NotFoundMiddleware } from "./middleware/not-found";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { authRouter, userRouter } from "./routes";
+import { authRouter, userRouter, productRouter } from "./routes";
 import helmet from "helmet";
 // @ts-ignore
 import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
-import productRouter from "./routes/productRouter";
 import fileUpload from "express-fileupload";
 
 dotenv.config();
