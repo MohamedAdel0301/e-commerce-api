@@ -12,20 +12,23 @@ export const errorHandlerMiddleware = (
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
     msg: err.message || "Something went wrong",
   };
-  if (err.errors && err.name === "ValidationError") {
+
+  if (err.name === "ValidationError" && err.errors) {
     customError.msg = Object.values(err.errors)
       .map((item) => item.message)
       .join(",");
     customError.statusCode = StatusCodes.BAD_REQUEST;
   }
-  if (err.code && err.code === 11000) {
-    //make use of keyValue
+
+  if (err.code === 11000) {
     customError.msg = `Duplicate value entered, please choose another value`;
     customError.statusCode = StatusCodes.BAD_REQUEST;
   }
-  if (err.name && err.name === "CastError") {
+
+  if (err.name === "CastError") {
     customError.msg = `No item found with id: ${err.value}`;
     customError.statusCode = StatusCodes.NOT_FOUND;
   }
+
   return res.status(customError.statusCode).json({ msg: customError.msg });
 };

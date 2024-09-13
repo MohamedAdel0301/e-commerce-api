@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { CustomErrors } from "../errors";
 import { isTokenValid } from "../utils/jwt-utils";
 import { Role } from "../types/types";
-import { Types } from "mongoose";
 
 export const authenticateUser = (
   req: Request,
